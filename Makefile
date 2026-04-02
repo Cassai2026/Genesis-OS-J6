@@ -7,9 +7,9 @@ DEVICE      := j6lte
 OUT         := $(CURDIR)/out
 SCRIPTS     := $(CURDIR)/build-scripts
 
-.PHONY: all kernel rootfs debloat package clean help
+.PHONY: all kernel rootfs debloat launcher package clean help
 
-all: kernel rootfs debloat package
+all: kernel rootfs debloat launcher package
 
 ## Build the privacy-hardened kernel for Exynos 7870 / j6lte
 kernel:
@@ -25,6 +25,11 @@ rootfs:
 debloat:
 	@echo "==> Removing bloatware and trackers..."
 	@bash $(SCRIPTS)/debloat.sh
+
+## Bundle the Genesis-Mobile PWA as the system home launcher
+launcher:
+	@echo "==> Bundling Genesis-Mobile launcher..."
+	@bash $(SCRIPTS)/bundle_launcher.sh
 
 ## Package everything into a flashable ZIP
 package:

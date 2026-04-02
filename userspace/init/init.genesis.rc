@@ -1,0 +1,40 @@
+# init.genesis.rc
+# Genesis OS init script for Samsung Galaxy J6 (j6lte)
+# Loaded by init.rc during early boot. Disables Samsung/Google telemetry
+# services and starts the Genesis-Mobile sovereign launcher.
+
+on early-init
+    # Mount the secure genesis data partition
+    mkdir /data/genesis 0700 system system
+
+on init
+    # Kill Samsung diagnostics agent at init (before it starts)
+    setprop ro.diag.enabled false
+
+on property:sys.boot_completed=1
+    # ---- Disable telemetry services ----
+    stop SPDClient
+    stop DiagMonAgent
+    stop ELMAgent
+    stop samsunganalytics
+
+    # ---- Disable Knox enforcement ----
+    setprop ro.config.knox 0
+
+    # ---- Start Genesis Mesh daemon ----
+    # (placeholder — replace with real Spider-Web mesh binary when available)
+    # start genesis-meshd
+
+    # ---- Launch Genesis Mobile sovereign HUD as home ----
+    am start -n global.cassai.genesis.mobile/.MainActivity \
+        --activity-clear-top \
+        --activity-single-top
+
+    log -t genesis "Genesis OS boot complete — Sovereign HUD active"
+
+service genesis-meshd /system/bin/genesis-meshd
+    class late_start
+    user system
+    group system inet net_admin
+    disabled
+    oneshot
